@@ -70,7 +70,7 @@ Java (JUnit), Python (pytest, unittest), JavaScript/TypeScript (Jest, Vitest), G
 ## Attribution
 
 - **Dave Farley** -- [8 Properties of Good Tests](https://www.linkedin.com/pulse/tdd-properties-good-tests-dave-farley-iexge/)
-- **Andrea LaForgia** -- [Farley Score methodology](https://github.com/andlaf-ak/claude-code-agents/tree/main/test-design-reviewer), scoring system, and signal detection patterns. Used with permission.
+- **Andrea Laforgia** -- [Farley Score methodology](https://github.com/andlaf-ak/claude-code-agents/tree/main/test-design-reviewer), scoring system, and signal detection patterns. Used with permission.
 - **Bernard McCarty** -- Plugin implementation
 
 ## License

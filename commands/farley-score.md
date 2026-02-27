@@ -54,8 +54,8 @@ After presenting the overview, ask the user what they'd like to do next (show th
 Display the pre-packaged Farley Score report from the bundled sample project.
 
 **To locate the report:**
-1. Resolve the plugin directory: `readlink .claude/commands/msec:farley-score.md` -- the plugin directory is the parent of the `commands/` folder.
-2. Read `<plugin_dir>/examples/sample-project/farley-score-report.md`
+1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')` -- this finds the plugin's root directory.
+2. Read `$PLUGIN_DIR/examples/sample-project/farley-score-report.md`
 
 Present the full report to the user, then walk them through the key sections:
 
@@ -166,14 +166,13 @@ This is **autonomous review mode** - Claude does the analysis and produces the r
 ## Knowledge Base (Reference During Analysis)
 
 **These files live in the plugin directory, not the user's project.** To locate them:
-1. Resolve the symlink: `readlink .claude/commands/msec:farley-score.md`
-2. The plugin directory is the parent of the `commands/` folder containing the symlink target.
-3. Knowledge files are at `<plugin_dir>/knowledge/farley/`.
+1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')`
+2. Knowledge files are at `$PLUGIN_DIR/knowledge/farley/`.
 
 **Load these documents during the phases indicated:**
 
-- **Phase 2 (Signal Collection):** Read `<plugin_dir>/knowledge/farley/signal-detection-patterns.md` for language-specific detection heuristics
-- **Phase 3 (Scoring):** Read `<plugin_dir>/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
+- **Phase 2 (Signal Collection):** Read `$PLUGIN_DIR/knowledge/farley/signal-detection-patterns.md` for language-specific detection heuristics
+- **Phase 3 (Scoring):** Read `$PLUGIN_DIR/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
 
 **Note:** Only read these files when you reach the relevant phase. Don't load upfront.
 
@@ -205,7 +204,7 @@ These 7 principles define the methodology:
 
 ### Phase 2: Signal Collection (6-10 turns)
 
-- **Read** `<plugin_dir>/knowledge/farley/signal-detection-patterns.md` for language-specific patterns (resolve plugin_dir from symlink as described in Knowledge Base section)
+- **Read** `$PLUGIN_DIR/knowledge/farley/signal-detection-patterns.md` for language-specific patterns (resolve PLUGIN_DIR as described in Knowledge Base section)
 - For each test file (or sampled subset):
   1. Identify test method boundaries (framework-specific markers)
   2. Scan for negative signals per property: sleep, reflection, shared state, ordering, I/O, magic numbers, cryptic names, trivial assertions, mega-tests
@@ -225,7 +224,7 @@ These 7 principles define the methodology:
 
 ### Phase 3: Scoring (3-5 turns)
 
-- **Read** `<plugin_dir>/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
+- **Read** `$PLUGIN_DIR/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
 
 #### Static Scoring
 
@@ -239,17 +238,11 @@ For each property, assess the test code holistically against the rubric, providi
 
 **CRITICAL: Use the Python CLI calculator for ALL math. Do NOT compute scores manually.**
 
-**Locating the calculator:** The CLI calculator lives in the plugin's `lib/` directory, NOT in the user's project. To find it:
-
-1. Read the symlink target of this command file: `readlink .claude/commands/msec:farley-score.md`
-2. The calculator is at `<plugin_dir>/lib/cli_calculator.py` where `<plugin_dir>` is the directory containing the symlink target's parent `commands/` folder.
-3. Example: if the symlink points to `/Users/you/farley_score_plugin/commands/farley-score.md`, then the calculator is at `/Users/you/farley_score_plugin/lib/cli_calculator.py`.
-
-**If the symlink resolution fails**, use `find / -path "*/farley_score/lib/cli_calculator.py" -maxdepth 6 2>/dev/null` as a fallback.
+**Locating the calculator:** The CLI calculator lives in the plugin's `lib/` directory, NOT in the user's project.
 
 ```bash
-# First, resolve the plugin directory
-PLUGIN_DIR=$(dirname "$(dirname "$(readlink .claude/commands/msec:farley-score.md)")")
+# Resolve the plugin directory (if not already set)
+PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')
 CLI="$PLUGIN_DIR/lib/cli_calculator.py"
 
 # Normalize a single property
@@ -421,7 +414,7 @@ https://github.com/andlaf-ak/claude-code-agents/tree/main/test-design-reviewer
 1. **Never modify code.** This command analyzes and reports only. No Write or Edit tools.
 2. **Record `file:line` references** for every signal detected. Evidence without location is unverifiable.
 3. **Score every property on both static and LLM dimensions** before blending. Skipping a dimension produces an unbalanced score.
-4. **Use the CLI calculator for ALL math.** Do not compute Farley Index, sigmoid normalization, or blending manually. Resolve the plugin directory from the command symlink and run `python3 <plugin_dir>/lib/cli_calculator.py`. See "CLI Calculator Integration" in Phase 3 for path resolution steps.
+4. **Use the CLI calculator for ALL math.** Do not compute Farley Index, sigmoid normalization, or blending manually. Run `python3 $PLUGIN_DIR/lib/cli_calculator.py`. See "CLI Calculator Integration" in Phase 3 for path resolution steps.
 5. **Apply the Farley Index formula exactly**: `(U*1.5 + M*1.5 + R*1.25 + A*1.0 + N*1.0 + G*1.0 + F*0.75 + T*1.0) / 9.0`. The divisor is 9.0 (sum of weights), not 8 (number of properties).
 6. **When scoring T (First/TDD)**, acknowledge that static evidence is indirect. Weight LLM judgment more heavily for this property. Note this in the methodology section.
 7. **Conservative base: 5.0** when no signals are detected for a property. No-signal means unknown quality, not good quality.

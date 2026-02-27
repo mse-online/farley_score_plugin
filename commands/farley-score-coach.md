@@ -58,9 +58,9 @@ For each property, use the teaching patterns from the coaching sections below: g
 ### Option 3: Practice with examples
 
 Load the bundled sample tests for hands-on exercises:
-1. Resolve the plugin directory: `readlink .claude/commands/msec:farley-score-coach.md` -- the plugin directory is the parent of the `commands/` folder.
-2. Sample tests are at `<plugin_dir>/examples/sample-project/tests/`
-3. The pre-packaged report is at `<plugin_dir>/examples/sample-project/farley-score-report.md`
+1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')`
+2. Sample tests are at `$PLUGIN_DIR/examples/sample-project/tests/`
+3. The pre-packaged report is at `$PLUGIN_DIR/examples/sample-project/farley-score-report.md`
 
 Start **Quiz Mode** using the Built-in Practice Tests section below. Begin with beginner-level anti-patterns (trivial tautologies and mega-tests are easiest to spot) and progress based on the user's responses.
 
@@ -81,11 +81,10 @@ Wait for the user's direction and respond accordingly using the coaching pattern
 **When explaining concepts, you may reference these verified sources.**
 
 **These files live in the plugin directory, not the user's project.** To locate them:
-1. Resolve the symlink: `readlink .claude/commands/msec:farley-score-coach.md`
-2. The plugin directory is the parent of the `commands/` folder containing the symlink target.
+1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')`
 
-- Dave Farley's Properties of Good Tests: `<plugin_dir>/knowledge/farley/farley-properties-and-scoring.md`
-- Signal detection patterns: `<plugin_dir>/knowledge/farley/signal-detection-patterns.md`
+- Dave Farley's Properties of Good Tests: `$PLUGIN_DIR/knowledge/farley/farley-properties-and-scoring.md`
+- Signal detection patterns: `$PLUGIN_DIR/knowledge/farley/signal-detection-patterns.md`
 
 **Note:** Only reference when relevant to teaching. Don't read files unless you need specific information.
 
@@ -453,8 +452,8 @@ Coach: "Excellent! You found 3 out of 4. You missed one:
 **The plugin includes sample tests with deliberate anti-patterns -- perfect for coaching exercises.**
 
 To locate them, resolve the plugin directory (see Knowledge Base above), then find:
-- `<plugin_dir>/examples/sample-project/tests/test_calculator.py` -- 13 tests (3 good + 10 bad)
-- `<plugin_dir>/examples/sample-project/tests/test_user_service.py` -- 8 tests (4 good + 4 bad)
+- `$PLUGIN_DIR/examples/sample-project/tests/test_calculator.py` -- 13 tests (3 good + 10 bad)
+- `$PLUGIN_DIR/examples/sample-project/tests/test_user_service.py` -- 8 tests (4 good + 4 bad)
 
 ### How to Use in Coaching
 

@@ -1,5 +1,5 @@
 {
-  "name": "farley-score-plugin",
+  "name": "msec",
   "version": "1.0.0",
   "description": "Test quality assessment using Dave Farley's 8 Properties of Good Tests",
   "author": {

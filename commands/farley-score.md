@@ -243,7 +243,7 @@ For each property, assess the test code holistically against the rubric, providi
 
 1. Read the symlink target of this command file: `readlink .claude/commands/msec:farley-score.md`
 2. The calculator is at `<plugin_dir>/lib/cli_calculator.py` where `<plugin_dir>` is the directory containing the symlink target's parent `commands/` folder.
-3. Example: if the symlink points to `/Users/you/farley_score/commands/msec-farley-score.md`, then the calculator is at `/Users/you/farley_score/lib/cli_calculator.py`.
+3. Example: if the symlink points to `/Users/you/farley_score_plugin/commands/farley-score.md`, then the calculator is at `/Users/you/farley_score_plugin/lib/cli_calculator.py`.
 
 **If the symlink resolution fails**, use `find / -path "*/farley_score/lib/cli_calculator.py" -maxdepth 6 2>/dev/null` as a fallback.
 

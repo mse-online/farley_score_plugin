@@ -8,7 +8,7 @@ Analyses your test suite and produces a **Farley Index** (0-10) with per-propert
 
 ```
 /plugin marketplace add bernardSolar/farley_score_plugin
-/plugin install farley-score-plugin@farley-score-plugin
+/plugin install msec@farley-score-plugin
 ```
 
 Or from the shell:

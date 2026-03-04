@@ -7,15 +7,15 @@ Analyses your test suite and produces a **Farley Index** (0-10) with per-propert
 ## Installation
 
 ```
-/plugin marketplace add bernardSolar/farley_score_plugin
+/plugin marketplace add mse-online/farley_score_plugin
 /plugin install msec@farley-score-plugin
 ```
 
 Or from the shell:
 
 ```bash
-claude plugin marketplace add bernardSolar/farley_score_plugin
-claude plugin install farley-score-plugin@farley-score-plugin
+claude plugin marketplace add mse-online/farley_score_plugin
+claude plugin install msec@farley-score-plugin
 ```
 
 ## Commands

@@ -1,10 +1,10 @@
-# Farley Score Plugin for Claude Code
+# Farley Score Commands for Claude Code and Codex
 
 Test quality assessment using Dave Farley's 8 Properties of Good Tests.
 
 Analyses your test suite and produces a **Farley Index** (0-10) with per-property breakdown, signal evidence, worst offenders, and prioritised recommendations.
 
-## Installation
+## Installation (Claude Code Plugin)
 
 ```
 /plugin marketplace add mse-online/farley_score_plugin
@@ -17,6 +17,14 @@ Or from the shell:
 claude plugin marketplace add mse-online/farley_score_plugin
 claude plugin install msec@farley-score-plugin
 ```
+
+## Usage in Codex
+
+Codex reads the command specs in this repository directly.
+
+- Run Farley Score analysis by asking Codex to execute the workflow in `commands/farley-score.md` against your target directory.
+- Run coaching mode by asking Codex to execute the workflow in `commands/farley-score-coach.md`.
+- Command assets (knowledge files, sample report, sample tests, CLI calculator) resolve from this repository root.
 
 ## Commands
 
@@ -66,6 +74,15 @@ claude plugin install msec@farley-score-plugin
 ## Supported Languages
 
 Java (JUnit), Python (pytest, unittest), JavaScript/TypeScript (Jest, Vitest), Go (testing), C# (NUnit, xUnit).
+
+## Compatibility Matrix
+
+| Concern | Claude Code | Codex |
+|---|---|---|
+| Invocation style | `/msec:farley-score ...`, `/msec:farley-score-coach ...` | Natural-language request to run `commands/farley-score.md` or `commands/farley-score-coach.md` |
+| Interactive menu tool | `AskUserQuestion` | `request_user_input` |
+| Command root for assets | Plugin install path | Repository root (this project) |
+| Knowledge/sample path style | `$COMMAND_ROOT/knowledge/...`, `$COMMAND_ROOT/examples/...` | `$COMMAND_ROOT/knowledge/...`, `$COMMAND_ROOT/examples/...` |
 
 ## Attribution
 

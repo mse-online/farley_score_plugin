@@ -98,7 +98,7 @@ Tests that verify language or framework behavior, not application code.
 ### Methodology Notes
 
 - Static/LLM blend: 60/40
-- LLM model: claude-opus-4-6
+- LLM model: claude-opus-4-6 (illustrative sample run; actual model depends on agent/runtime)
 - Files analyzed: 2 (no sampling -- under 50-file threshold)
 - Test methods analyzed: 21
 - Language: Python 3

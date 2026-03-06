@@ -6,6 +6,20 @@ description: "Review: Evaluate test quality using Dave Farley's 8 Properties of 
 
 **CRITICAL: BEFORE doing anything else, determine how the user invoked this command.**
 
+## AGENT COMPATIBILITY
+
+Use these mappings to keep this command single-source across agents:
+
+- **Invocation syntax**
+  - Claude Code: `/msec:farley-score [target]`
+  - Codex: plain-language request to run the `farley-score` workflow on `[target]`
+- **Interactive menu tool**
+  - Claude Code: `AskUserQuestion`
+  - Codex: `request_user_input`
+- **Command root**
+  - Set `COMMAND_ROOT` to the root directory that contains `commands/`, `knowledge/`, `examples/`, and `lib/`
+  - In this repository, `COMMAND_ROOT` is the repository root
+
 ### If invoked WITH a target path
 
 If the user's message includes a file path, directory path, or specifies what to analyse (e.g., `/msec:farley-score tests/`, `/msec:farley-score src/test/java/`, `/msec:farley-score evaluate test quality for the whole project`), skip the welcome menu and go directly to the **4-Phase Workflow** section below.
@@ -14,7 +28,7 @@ If the user's message includes a file path, directory path, or specifies what to
 
 If the user simply typed `/msec:farley-score` with no additional arguments or context, present the welcome menu.
 
-**Use the `AskUserQuestion` tool to present the menu. Do NOT output the options as plain text.** This ensures the user gets a navigable interactive menu (arrow keys + Enter) rather than having to type a number.
+**Use the agent's interactive question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex) to present the menu. Do NOT output the options as plain text.** This ensures the user gets a navigable interactive menu (arrow keys + Enter) rather than having to type a number.
 
 Question: **"Welcome to Farley Score! What would you like to do?"**
 Header: **"Farley Score"**
@@ -53,8 +67,8 @@ After presenting the overview, ask the user what they'd like to do next (show th
 Display the pre-packaged Farley Score report from the bundled sample project.
 
 **To locate the report:**
-1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')` -- this finds the plugin's root directory.
-2. Read `$PLUGIN_DIR/examples/sample-project/farley-score-report.md`
+1. Resolve command root: `COMMAND_ROOT=$(pwd)` (or set it explicitly to the directory containing this command package).
+2. Read `$COMMAND_ROOT/examples/sample-project/farley-score-report.md`
 
 Present the full report to the user, then walk them through the key sections:
 
@@ -84,7 +98,7 @@ Wait for their response, then proceed to the **4-Phase Workflow** section with t
 
 Say: **"Switching to coaching mode! The Farley Score Coach teaches test quality through guided practice and Socratic questioning."**
 
-Then invoke `/msec:farley-score-coach` for the user.
+Then switch to the Farley Score Coach workflow (`/msec:farley-score-coach` in Claude Code, or run `commands/farley-score-coach.md` in Codex).
 
 ---
 
@@ -104,7 +118,7 @@ If the user types something that doesn't match the options above, respond helpfu
 
 **This command ANALYZES test code. It NEVER modifies code.**
 
-- Do NOT use Write, Edit, or any file-modifying tools
+- Do NOT use any file-modifying actions or tools
 - Do NOT create, delete, or rename files
 - Output is returned as structured text in the conversation
 - If the user requests code changes, state that recommendations are in the report and suggest using `/msec:tdd` for implementation
@@ -113,7 +127,7 @@ If the user types something that doesn't match the options above, respond helpfu
 
 ## What This Does
 
-When you run `/msec:farley-score`, Claude will:
+When this command runs, the agent will:
 
 1. **Discover** test files, detect language and frameworks
 2. **Collect** static signals per property per test method
@@ -122,9 +136,9 @@ When you run `/msec:farley-score`, Claude will:
 5. **Compute** the Farley Index using the deterministic Python calculator
 6. **Report** with property breakdown, evidence, worst offenders, and recommendations
 
-This is **autonomous review mode** - Claude does the analysis and produces the report.
+This is **autonomous review mode** - the agent does the analysis and produces the report.
 
-**Want to LEARN test quality instead?** Use `/msec:farley-score-coach` for interactive teaching.
+**Want to LEARN test quality instead?** Use the Farley Score Coach workflow (`/msec:farley-score-coach` in Claude Code; `commands/farley-score-coach.md` in Codex) for interactive teaching.
 
 ---
 
@@ -164,14 +178,15 @@ This is **autonomous review mode** - Claude does the analysis and produces the r
 
 ## Knowledge Base (Reference During Analysis)
 
-**These files live in the plugin directory, not the user's project.** To locate them:
-1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')`
-2. Knowledge files are at `$PLUGIN_DIR/knowledge/farley/`.
+**These files live under `COMMAND_ROOT`.** In this repository, `COMMAND_ROOT` is the project root.
+
+1. Resolve command root: `COMMAND_ROOT=$(pwd)` (or set explicitly when needed)
+2. Knowledge files are at `$COMMAND_ROOT/knowledge/farley/`.
 
 **Load these documents during the phases indicated:**
 
-- **Phase 2 (Signal Collection):** Read `$PLUGIN_DIR/knowledge/farley/signal-detection-patterns.md` for language-specific detection heuristics
-- **Phase 3 (Scoring):** Read `$PLUGIN_DIR/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
+- **Phase 2 (Signal Collection):** Read `$COMMAND_ROOT/knowledge/farley/signal-detection-patterns.md` for language-specific detection heuristics
+- **Phase 3 (Scoring):** Read `$COMMAND_ROOT/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
 
 **Note:** Only read these files when you reach the relevant phase. Don't load upfront.
 
@@ -181,7 +196,7 @@ This is **autonomous review mode** - Claude does the analysis and produces the r
 
 These 7 principles define the methodology:
 
-1. **Read-only analysis**: Analyze but never modify code. No Write or Edit tools. Output is returned as structured text.
+1. **Read-only analysis**: Analyze but never modify code. No file-modifying tools/actions. Output is returned as structured text.
 2. **Two-phase scoring**: Score each property through static signal detection first (deterministic), then LLM semantic assessment (controlled). Blend at 60/40 static/LLM per property.
 3. **Per-test-method granularity**: Collect signals at individual test method level. Aggregate to file level (mean for positives, P90 for negatives). Aggregate to suite level via LOC-weighted mean.
 4. **Evidence-anchored scoring**: Every property score cites specific code locations and signal counts. A score without evidence is not a score -- it is a guess.
@@ -203,7 +218,7 @@ These 7 principles define the methodology:
 
 ### Phase 2: Signal Collection (6-10 turns)
 
-- **Read** `$PLUGIN_DIR/knowledge/farley/signal-detection-patterns.md` for language-specific patterns (resolve PLUGIN_DIR as described in Knowledge Base section)
+- **Read** `$COMMAND_ROOT/knowledge/farley/signal-detection-patterns.md` for language-specific patterns (resolve COMMAND_ROOT as described in Knowledge Base section)
 - For each test file (or sampled subset):
   1. Identify test method boundaries (framework-specific markers)
   2. Scan for negative signals per property: sleep, reflection, shared state, ordering, I/O, magic numbers, cryptic names, trivial assertions, mega-tests
@@ -223,7 +238,7 @@ These 7 principles define the methodology:
 
 ### Phase 3: Scoring (3-5 turns)
 
-- **Read** `$PLUGIN_DIR/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
+- **Read** `$COMMAND_ROOT/knowledge/farley/farley-properties-and-scoring.md` for rubrics and formula
 
 #### Static Scoring
 
@@ -237,12 +252,12 @@ For each property, assess the test code holistically against the rubric, providi
 
 **CRITICAL: Use the Python CLI calculator for ALL math. Do NOT compute scores manually.**
 
-**Locating the calculator:** The CLI calculator lives in the plugin's `lib/` directory, NOT in the user's project.
+**Locating the calculator:** The CLI calculator lives under `COMMAND_ROOT/lib/`.
 
 ```bash
-# Resolve the plugin directory (if not already set)
-PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')
-CLI="$PLUGIN_DIR/lib/cli_calculator.py"
+# Resolve the command root (if not already set)
+COMMAND_ROOT=$(pwd)
+CLI="$COMMAND_ROOT/lib/cli_calculator.py"
 
 # Normalize a single property
 python3 "$CLI" normalize-property '{"prop":"U","neg_count":2,"pos_count":8,"total_methods":20}'
@@ -410,10 +425,10 @@ https://github.com/andlaf-ak/claude-code-agents/tree/main/test-design-reviewer
 
 ## Critical Rules
 
-1. **Never modify code.** This command analyzes and reports only. No Write or Edit tools.
+1. **Never modify code.** This command analyzes and reports only. No file-modifying tools/actions.
 2. **Record `file:line` references** for every signal detected. Evidence without location is unverifiable.
 3. **Score every property on both static and LLM dimensions** before blending. Skipping a dimension produces an unbalanced score.
-4. **Use the CLI calculator for ALL math.** Do not compute Farley Index, sigmoid normalization, or blending manually. Run `python3 $PLUGIN_DIR/lib/cli_calculator.py`. See "CLI Calculator Integration" in Phase 3 for path resolution steps.
+4. **Use the CLI calculator for ALL math.** Do not compute Farley Index, sigmoid normalization, or blending manually. Run `python3 $COMMAND_ROOT/lib/cli_calculator.py`. See "CLI Calculator Integration" in Phase 3 for path resolution steps.
 5. **Apply the Farley Index formula exactly**: `(U*1.5 + M*1.5 + R*1.25 + A*1.0 + N*1.0 + G*1.0 + F*0.75 + T*1.0) / 9.0`. The divisor is 9.0 (sum of weights), not 8 (number of properties).
 6. **When scoring T (First/TDD)**, acknowledge that static evidence is indirect. Weight LLM judgment more heavily for this property. Note this in the methodology section.
 7. **Conservative base: 5.0** when no signals are detected for a property. No-signal means unknown quality, not good quality.

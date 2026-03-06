@@ -5,7 +5,7 @@ description: Dave Farley's 8 Properties of Good Tests, scoring rubrics, Farley I
 
 # Farley Properties and Scoring
 
-> **Implementation note**: The Farley Index formula and sigmoid normalization are implemented in `lib/cli_calculator.py`. The agent delegates all math to this deterministic Python CLI calculator (JSON in, JSON out) to ensure reproducible scores. Available commands: `normalize-property`, `blend-scores`, `compute-farley`, `get-rating`, `aggregate-file`, `aggregate-suite`, `full-pipeline`.
+> **Implementation note**: The Farley Index formula and sigmoid normalization are implemented in `lib/cli_calculator.py`. The command workflow delegates all math to this deterministic Python CLI calculator (JSON in, JSON out) to ensure reproducible scores. Available commands: `normalize-property`, `blend-scores`, `compute-farley`, `get-rating`, `aggregate-file`, `aggregate-suite`, `full-pipeline`.
 
 ## The 8 Properties of Good Tests
 

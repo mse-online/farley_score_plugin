@@ -6,6 +6,20 @@ description: "Learning: Interactive test quality coaching using Dave Farley's 8 
 
 **CRITICAL: BEFORE doing anything else, determine how the user invoked this command.**
 
+## AGENT COMPATIBILITY
+
+Use these mappings to keep this command single-source across agents:
+
+- **Invocation syntax**
+  - Claude Code: `/msec:farley-score-coach [topic]`
+  - Codex: plain-language request to run the `farley-score-coach` workflow on `[topic]`
+- **Interactive menu tool**
+  - Claude Code: `AskUserQuestion`
+  - Codex: `request_user_input`
+- **Command root**
+  - Set `COMMAND_ROOT` to the root directory that contains `commands/`, `knowledge/`, `examples/`, and `lib/`
+  - In this repository, `COMMAND_ROOT` is the repository root
+
 ### If invoked WITH a specific topic or request
 
 If the user's message includes a specific topic, question, or request (e.g., `/msec:farley-score-coach help me understand maintainability`, `/msec:farley-score-coach practice tautologies`, `/msec:farley-score-coach review my test design`), skip the welcome menu and go directly to the **Farley Score Coach** section below to begin coaching on that topic.
@@ -14,7 +28,7 @@ If the user's message includes a specific topic, question, or request (e.g., `/m
 
 If the user simply typed `/msec:farley-score-coach` with no additional arguments, present the welcome menu.
 
-**Use the `AskUserQuestion` tool to present the menu. Do NOT output the options as plain text.** This ensures the user gets a navigable interactive menu (arrow keys + Enter) rather than having to type a number.
+**Use the agent's interactive question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex) to present the menu. Do NOT output the options as plain text.** This ensures the user gets a navigable interactive menu (arrow keys + Enter) rather than having to type a number.
 
 Question: **"Welcome to the Farley Score Coach! What would you like to learn?"**
 Header: **"Farley Score Coach"**
@@ -57,9 +71,9 @@ For each property, use the teaching patterns from the coaching sections below: g
 ### Option 3: Practice with examples
 
 Load the bundled sample tests for hands-on exercises:
-1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')`
-2. Sample tests are at `$PLUGIN_DIR/examples/sample-project/tests/`
-3. The pre-packaged report is at `$PLUGIN_DIR/examples/sample-project/farley-score-report.md`
+1. Resolve command root: `COMMAND_ROOT=$(pwd)` (or set it explicitly to the directory containing this command package)
+2. Sample tests are at `$COMMAND_ROOT/examples/sample-project/tests/`
+3. The pre-packaged report is at `$COMMAND_ROOT/examples/sample-project/farley-score-report.md`
 
 Start **Quiz Mode** using the Built-in Practice Tests section below. Begin with beginner-level anti-patterns (trivial tautologies and mega-tests are easiest to spot) and progress based on the user's responses.
 
@@ -79,11 +93,12 @@ Wait for the user's direction and respond accordingly using the coaching pattern
 
 **When explaining concepts, you may reference these verified sources.**
 
-**These files live in the plugin directory, not the user's project.** To locate them:
-1. Run: `PLUGIN_DIR=$(find ~/.claude/plugins -name "cli_calculator.py" 2>/dev/null | head -1 | sed 's|/lib/cli_calculator.py||')`
+**These files live under `COMMAND_ROOT`.** In this repository, `COMMAND_ROOT` is the project root.
 
-- Dave Farley's Properties of Good Tests: `$PLUGIN_DIR/knowledge/farley/farley-properties-and-scoring.md`
-- Signal detection patterns: `$PLUGIN_DIR/knowledge/farley/signal-detection-patterns.md`
+1. Resolve command root: `COMMAND_ROOT=$(pwd)` (or set explicitly when needed)
+
+- Dave Farley's Properties of Good Tests: `$COMMAND_ROOT/knowledge/farley/farley-properties-and-scoring.md`
+- Signal detection patterns: `$COMMAND_ROOT/knowledge/farley/signal-detection-patterns.md`
 
 **Note:** Only reference when relevant to teaching. Don't read files unless you need specific information.
 
@@ -450,9 +465,9 @@ Coach: "Excellent! You found 3 out of 4. You missed one:
 
 **The plugin includes sample tests with deliberate anti-patterns -- perfect for coaching exercises.**
 
-To locate them, resolve the plugin directory (see Knowledge Base above), then find:
-- `$PLUGIN_DIR/examples/sample-project/tests/test_calculator.py` -- 13 tests (3 good + 10 bad)
-- `$PLUGIN_DIR/examples/sample-project/tests/test_user_service.py` -- 8 tests (4 good + 4 bad)
+To locate them, resolve command root (see Knowledge Base above), then find:
+- `$COMMAND_ROOT/examples/sample-project/tests/test_calculator.py` -- 13 tests (3 good + 10 bad)
+- `$COMMAND_ROOT/examples/sample-project/tests/test_user_service.py` -- 8 tests (4 good + 4 bad)
 
 ### How to Use in Coaching
 
